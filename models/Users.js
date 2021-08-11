@@ -39,6 +39,21 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    fromPlace: {
+        type: String,
+        default: "",
+        required: false
+    },
+    currentPlace: {
+        type: String,
+        default:"",
+        required: false,
+    },
+    desc: {
+        type: String,
+        default: "",
+        required: false,
+    }
 },
 { timestamps: true }
 );

@@ -7,6 +7,7 @@ router.get("/", (req, res) => {
     res.send("Auth");
 });
 
+//REGISTER
 router.post("/register", async (req, res) => {
     const reqBody = req.body;
     try{
@@ -16,7 +17,7 @@ router.post("/register", async (req, res) => {
         
         const newUser = new User({
             username: reqBody.username,
-            password: reqBody.password,
+            password: hashedPassword,
             email: reqBody.email,
             
         });
@@ -28,9 +29,33 @@ router.post("/register", async (req, res) => {
 
     catch(err){
         res.status(500).send('ERROR saving new user');
-        console.err('ERROR: ', err);
+        console.log('ERROR: ', err);
+    }
+    finally{
+        reqBody = {}
     }
 
 });
+
+//LOGIN
+router.post("/login", async (req, res) => {
+    const reqBody = req.body
+    try{
+        const user = await User.findOne({ email: reqBody.email });
+        !user && res.status(404).send("user not found");
+
+        const validPassword = await bcrypt.compare( reqBody.password, user.password)
+        !validPassword && res.status(400).send("wrong password");
+
+        res.status(200).json(user);
+    }
+    catch(err){
+        res.status(500).send('ERROR Logging In');
+        console.log("ERROR: ", err);
+    }
+    finally{
+        reqBody = {}
+    }
+})
 
 module.exports = router;
