@@ -53,6 +53,15 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: "",
         required: false,
+    },
+    relationship: {
+        type: Number,
+        enum: [1, 2, 3],
+    },
+    active: {
+        type: Boolean,
+        default: false,
+        required: true
     }
 },
 { timestamps: true }
