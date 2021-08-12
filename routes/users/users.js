@@ -32,7 +32,7 @@ router.put("/:id", async (req, res) => {
 
 //deactivate user
 router.put("/deactivate/:id", async (req, res) => {
-    const reqBody = req.body;
+    var reqBody = req.body;
     var isActive = false;
 
     await User.find({"_id":reqBody.userId}, (err, res) => {
@@ -71,6 +71,29 @@ router.get("/:id", async(req, res) => {
    catch(err){
        res.status(500).send("No user Found")
    }
+});
+
+//follow user
+router.put("/follow/:id", async (req, res) => {
+    if(req.body.userId === req.params.id){
+        res.status(403).json("You cannot follow yourself")
+    }else{
+        try{
+            const user = await User.findById(req.params.id);
+            const currentUser = await User.findById(req.body.userId);
+            if(!user.followers.includes(req.body.userId)){
+                await user.updateOne({$push: {followers: req.body.userId}});
+                await currentUser.updateOne({$push: {following: req.body.userId}});
+                res.status(200).json("Follow successful");
+            }
+            else{
+                res.status(400).send("You already follow this user")
+            }
+        }
+        catch(err) {
+            res.status(500).send("ERR", err)
+        }
+    }
 });
 
 module.exports = router;
